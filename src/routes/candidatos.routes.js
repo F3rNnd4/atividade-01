@@ -1,43 +1,56 @@
 import { Router } from "express";
 
-const candidatossRoutes = Router();
+const candidatosRoutes = Router();
 
 let candidatos = [
     {
-        id: Math.random() * 1000000,
+        id: Math.floor(Math.random() * 1000000),
         nome: 'Capitã Lucimara',
         idade: 42,
         partido: 'PSD',
-        segundoMandato: true,
+        segundo: true, //Segundo mandato
         propostas: [
             'Aumento do salário',
             'Redução de impostos',
             'Mais investimentos em educação'
         ]
     },
-
 ];
 
-//Rota para buscar todas os candidatos
-candidatossRoutes.get("/", (req, res) => {
+///////Rota para buscar todas os candidatos///////
+candidatosRoutes.get("/", (req, res) => {
     return res.status(200).send( candidatos )
 });
 
-//Rota para criar uma nova emoção
-candidatossRoutes.post("/new", (req, res) => {
-    const { nome, cor } = req.body;
-    const novaEmocao = {
-        id: candidatos.length + 1,
-        nome: nome,
-        cor: cor
+///////Rota para criar um novo candidato///////
+candidatosRoutes.post("/", (req, res) => {
+    const { nome, partido, idade, segundo, propostas } = req.body;
+
+//Validação dos campos nome e partido
+    if (!nome || !partido) {
+        return res.status(400).send({message: 'O nome ou partido não foi preenchido!'})
     }
 
-    candidatos.push(novaEmocao)
-    return res.status(201).send( candidatos )
+//Validação de idade
+    if (idade < 18) {
+        return res.status(400).send({message: 'O candidato não possui idade suficiente para participar!'})
+    }
+
+    const novoCandidato = {
+        id: Math.floor(Math.random() * 1000000),
+        nome,
+        partido,
+        idade,
+        segundo,
+        propostas
+    }
+
+    candidatos.push(novoCandidato)
+    return res.status(201).send( {message: "Candidato cadastrado com sucesso!", novoCandidato} )
 });
 
-//Rota para buscar uma emoção pelo ID
-candidatossRoutes.get("/:id", (req, res) => {
+//Rota para buscar um candidato pelo id
+candidatosRoutes.get("/:id", (req, res) => {
     const { id } = req.params;
 
     //console.log(id);
@@ -50,8 +63,8 @@ candidatossRoutes.get("/:id", (req, res) => {
     return res.status(200).send({message: "Emoção encontrada", emocao,});
 });
 
-//Rota para editar uma emoção com o id
-candidatossRoutes.put("/:id", (req, res) => {
+//Rota para editar um candidato com o id
+candidatosRoutes.put("/:id", (req, res) => {
     const { id } = req.params;
 
     const emocao = candidatos.find((emotion) => emotion.id == id);
@@ -67,8 +80,8 @@ candidatossRoutes.put("/:id", (req, res) => {
     return res.status(200).send({message: "Emoção atualizada!", emocao,});
 })
 
-//Rota para deletar um emoção
-candidatossRoutes.delete("/:id", (req, res) => {
+//Rota para deletar um candidato
+candidatosRoutes.delete("/:id", (req, res) => {
     const { id } = req.params;
 
     const emocao = candidatos.find((emotion) => emotion.id == id);
@@ -82,4 +95,4 @@ candidatossRoutes.delete("/:id", (req, res) => {
     return res.status(200).send({message: "Emoção deletada!", emocao,});
 });
 
-export default candidatossRoutes;
+export default candidatosRoutes;

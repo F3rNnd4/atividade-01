@@ -7,6 +7,6 @@ routes.get("/", (req, res) => {
     return res.status(200).send({ message: "Eu ouvo música!"})
 });
 
-routes.get("/candidatos", candidatosRoutes);
+routes.use("/candidatos", candidatosRoutes);
 
 export default routes;
